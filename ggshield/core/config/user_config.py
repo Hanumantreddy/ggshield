@@ -10,6 +10,7 @@ from ggshield.core.config.errors import ParseError, format_validation_error
 from ggshield.core.config.utils import (
     get_global_path,
     load_yaml,
+    remove_common_dict_items,
     save_yaml,
     update_from_other_instance,
 )
@@ -90,7 +91,12 @@ class UserConfig:
         """
         schema = UserConfigSchema()
         dct = schema.dump(self)
+        default_dct = schema.dump(schema.load({}))
+
+        dct = remove_common_dict_items(dct, default_dct)
+
         dct["version"] = CURRENT_CONFIG_VERSION
+
         save_yaml(dct, config_path)
 
     @classmethod
